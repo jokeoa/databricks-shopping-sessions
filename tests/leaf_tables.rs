@@ -61,3 +61,31 @@ fn every_chunk_boundary() {
         assert_eq!(found, expected);
     }
 }
+#[test]
+fn vector_masks_match_scalar_on_all_lengths() {
+    let alphabet = b"ab,\",ab\r01,\0\xff";
+    let mut rng = 61234567u64;
+    for len in 0..=180 {
+        for _ in 0..100 {
+            let bytes: Vec<u8> = (0..len)
+                .map(|_| {
+                    rng ^= rng << 13;
+                    rng ^= rng >> 7;
+                    rng ^= rng << 17;
+                    alphabet[rng as usize % alphabet.len()]
+                })
+                .collect();
+            macro_rules! check {
+                ($n:expr) => {
+                    assert_eq!(
+                        split_line::<$n>(&bytes),
+                        shopping_sessions::csv::scalar::<$n>(&bytes)
+                    );
+                };
+            }
+            check!(2);
+            check!(4);
+            check!(7);
+        }
+    }
+}

@@ -153,29 +153,47 @@ impl Drop for Publication {
 pub fn publish(out: &Path, batches: Vec<Batch>, r: &Refs) -> Result<()> {
     let mut tx = Publication::default();
     let mut totals: Map<_, [i64; 4]> = Map::default();
-    let mut check = HashSet::new();
+    let capacity = batches.iter().map(|b| b.users.len()).sum();
+    let mut check =
+        HashSet::with_capacity_and_hasher(capacity, foldhash::fast::RandomState::default());
     let (mut count, mut revenue) = (0, 0);
     let mut dup = false;
     let (mut max_events, mut max_clicks, mut max_active) = (0, 0, 0);
-    for (i, batch) in batches.into_iter().enumerate() {
-        max_events = max_events.max(batch.max_events);
-        max_clicks = max_clicks.max(batch.max_clicks);
-        max_active = max_active.max(batch.max_active);
-        for u in &batch.users {
-            dup |= !check.insert((u.person, u.day));
-            count += u.sessions;
-            revenue += u.cents;
-        }
-        let dir = out.join("user_daily");
-        users(tx.part(&dir, i)?, &batch.users, r).map_err(|e| problem(&dir, e))?;
-        for (key, counts) in batch.campaigns {
-            let dest = totals.entry(key).or_default();
-            for i in 0..4 {
-                dest[i] += counts[i];
+    let dir = out.join("user_daily");
+    std::thread::scope(|scope| -> Result<()> {
+        let mut handles = Vec::new();
+        for (i, batch) in batches.into_iter().enumerate() {
+            max_events = max_events.max(batch.max_events);
+            max_clicks = max_clicks.max(batch.max_clicks);
+            max_active = max_active.max(batch.max_active);
+            for u in &batch.users {
+                #[cfg(feature = "diag")]
+                crate::diag::user(u, r);
+                dup |= !check.insert((u.person, u.day));
+                count += u.sessions;
+                revenue += u.cents;
             }
+            let part = tx.part(&dir, i)?;
+            handles.push(
+                std::thread::Builder::new()
+                    .spawn_scoped(scope, move || users(part, &batch.users, r))
+                    .map_err(|e| problem(&dir, e))?,
+            );
+            batch.campaigns.merge_into(&mut totals);
         }
-    }
+        for handle in handles {
+            handle
+                .join()
+                .map_err(|_| problem(&dir, "writer panicked"))?
+                .map_err(|e| problem(&dir, e))?;
+        }
+        Ok(())
+    })?;
     let rows: Vec<_> = totals.into_iter().collect();
+    #[cfg(feature = "diag")]
+    for ((c, day), v) in &rows {
+        crate::diag::campaign(*c, *day, v, r);
+    }
     let dir = out.join("campaign_daily");
     campaigns(tx.part(&dir, 0)?, &rows, r).map_err(|e| problem(&dir, e))?;
     tx.commit()?;

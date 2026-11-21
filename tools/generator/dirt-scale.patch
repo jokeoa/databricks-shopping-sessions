@@ -1,0 +1,148 @@
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -24,6 +24,7 @@
+     clicks: u64,
+     output: PathBuf,
+     threads: usize,
++    dirt_scale: u32,
+ }
+ 
+ fn main() -> ExitCode {
+@@ -49,6 +50,9 @@
+         arguments.get(at + 1).cloned()
+     };
+     let parsed = Arguments {
++        dirt_scale: if arguments.iter().any(|v| v=="--dirt-scale") {
++            value("--dirt-scale")?.parse::<u32>().ok().filter(|v|(1..=16).contains(v))?
++        } else {1},
+         seed: value("--seed")?.parse().ok()?,
+         events: value("--events")?.parse().ok()?,
+         clicks: value("--clicks")?.parse().ok()?,
+@@ -62,7 +66,7 @@
+ }
+ 
+ fn run(arguments: &Arguments) -> io::Result<()> {
+-    let dataset = Dataset::plan(arguments.seed, arguments.events, arguments.clicks);
++    let dataset = Dataset::plan(arguments.seed, arguments.events, arguments.clicks, arguments.dirt_scale);
+     let threads = arguments.threads;
+ 
+     let shards: Vec<Mutex<Option<Shard>>> =
+--- a/src/plan.rs
++++ b/src/plan.rs
+@@ -95,6 +95,7 @@
+ }
+ 
+ pub struct Dataset {
++    pub dirt_scale: u32,
+     pub seed: u64,
+     pub window_start: i64,
+     pub rates: Rates,
+@@ -120,7 +121,7 @@
+ }
+ 
+ impl Dataset {
+-    pub fn plan(seed: u64, events: u64, clicks: u64) -> Self {
++    pub fn plan(seed: u64, events: u64, clicks: u64, dirt_scale: u32) -> Self {
+         let mut random = Random::new(seed, Stream::Dataset, 0);
+         let first_day = days_from_civil(2025, 1, 1);
+         let last_day = days_from_civil(2028, 12, 31) - WINDOW_DAYS;
+@@ -132,7 +133,7 @@
+             late: random.rate(0.005, 0.015),
+             bad_user: 0.002,
+             // "A few hundred" at the full 75M rows.
+-            case_variant: 0.000_005,
++            case_variant: (0.000_005 * f64::from(dirt_scale)).min(1.0),
+             bad_type: 0.001,
+             bad_price: 0.05,
+             unknown_product: 0.005,
+@@ -181,7 +182,7 @@
+                 user.events.min(u64::from(SLOTS)),
+             ) as u32;
+             user.chain = (WHALE_USERS..WHALE_USERS + CHAIN_PEOPLE).contains(&index)
+-                || plan_random.chance(CHAIN_SHARE);
++                || plan_random.chance((CHAIN_SHARE * f64::from(dirt_scale)).min(1.0));
+             user.aliases = if user.chain {
+                 plan_random.between(CHAIN_ALIASES.0, CHAIN_ALIASES.1)
+             } else if index < WHALE_USERS {
+@@ -194,7 +195,7 @@
+                     _ => plan_random.between(4, 8),
+                 }
+             } as u32;
+-            if plan_random.chance(KIOSK_SHARE) {
++            if plan_random.chance((KIOSK_SHARE * f64::from(dirt_scale)).min(1.0)) {
+                 user.kiosk = 1 + plan_random.below(u64::from(kiosks)) as u8;
+             }
+             click_weights.push(if clicks_ads {
+@@ -240,6 +241,7 @@
+         let whale_campaigns = campaign_by_rank[CAMPAIGNS - whale_campaign_count..].to_vec();
+ 
+         Self {
++            dirt_scale,
+             seed,
+             window_start,
+             rates,
+--- a/src/user.rs
++++ b/src/user.rs
+@@ -205,7 +205,7 @@
+                         row.field(|_| {});
+                     } else {
+                         row.field(|out| out.extend_from_slice(id));
+-                        if random.chance(LINK_CASE_VARIANT) {
++                        if random.chance((LINK_CASE_VARIANT * f64::from(self.dataset.dirt_scale)).min(1.0)) {
+                             row.uppercase_last();
+                         }
+                     }
+@@ -388,7 +388,7 @@
+         };
+         // "Events, in this order" step 2 in the README (fixture E5): only the earliest copy is bad, and a later
+         // valid copy must not rescue the event.
+-        let original_present = if copies > 0 && !timestamp_is_bad && random.chance(BAD_ORIGINAL_SHARE) {
++        let original_present = if copies > 0 && !timestamp_is_bad && random.chance((BAD_ORIGINAL_SHARE * f64::from(self.dataset.dirt_scale)).min(1.0)) {
+             let mut original = row.clone();
+             original.replace(2, |out| {
+                 let outside = outside(random, dataset.window_start, dataset.window_end());
+@@ -403,7 +403,7 @@
+         // Only revise a row whose earliest copy survived CSV corruption, so the
+         // correct tables stay the same for every seed. Use a separate keyed draw
+         // to keep the old generator's random stream and file choices intact.
+-        if original_present && copies > 0 && scramble(index, dataset.click_key) % 64 == 0 {
++        if original_present && copies > 0 && scramble(index, dataset.click_key) % 64 < u64::from(dataset.dirt_scale) {
+             let other = (self.index + 1) % dataset.users.len();
+             row.replace(1, |out| {
+                 out.extend_from_slice(&user_id(dataset, other as u64 * ALIAS_SLOTS));
+@@ -431,19 +431,20 @@
+         while index < end {
+             let random = &mut self.random;
+             let start = *random.pick(&targets);
++            let width = 4 * u64::from(self.dataset.dirt_scale);
+             let delta = match random.below(1000) {
+-                0..4 => CLICK_REACH,
+-                4..8 => CLICK_REACH + 1,
+-                8..12 => 0,
+-                12..16 => -1,
+-                16..750 => (random.spread(19) * SECOND).min(CLICK_REACH),
++                n if n < width => CLICK_REACH,
++                n if n < 2 * width => CLICK_REACH + 1,
++                n if n < 3 * width => 0,
++                n if n < 4 * width => -1,
++                0..750 => (random.spread(19) * SECOND).min(CLICK_REACH),
+                 _ => CLICK_REACH + random.between(1, 3 * DAY / SECOND) * SECOND,
+             };
+             let mut ts = start - delta;
+             if ts < earliest {
+                 ts = start - random.below(((start - earliest) / SECOND) as u64 + 1) as i64 * SECOND;
+             }
+-            let same_millisecond = end - index >= 2 && random.chance(SAME_MILLISECOND_SHARE);
++            let same_millisecond = end - index >= 2 && random.chance((SAME_MILLISECOND_SHARE * f64::from(self.dataset.dirt_scale)).min(1.0));
+             for _ in 0..1 + u64::from(same_millisecond) {
+                 self.click(parts, index, ts);
+                 index += 1;
+@@ -468,7 +469,7 @@
+         user_field(row, random, rates.bad_user, rates.case_variant, &self.ids[alias]);
+         row.field(|out| {
+             if random.chance(rates.unknown_campaign) {
+-                let id = if random.chance(UPPERCASE_CAMPAIGN_SHARE) {
++                let id = if random.chance((UPPERCASE_CAMPAIGN_SHARE * f64::from(self.dataset.dirt_scale)).min(1.0)) {
+                     // Existing catalog suffix in wrong case so case-insensitive matching is caught.
+                     format!("C_{}", random.between(1, CAMPAIGNS as i64))
+                 } else {

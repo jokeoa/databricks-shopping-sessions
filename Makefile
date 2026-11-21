@@ -33,3 +33,20 @@ readers-check: native
 	$(PY) tools/check_outputs.py $(BIN)
 scaffold-smoke: readers-check
 	cargo test --locked --test output_contract
+
+.PHONY: diff leaf-corpus mutation-check diag bench
+MODES ?= simple,fast
+LEVELS ?= T2
+diag:
+	cargo build --profile quick --locked --features diag
+	cp target/quick/shopping-sessions $(WORK)/shopping-diag
+leaf-corpus: diag
+	$(PY) tools/leaf_corpus.py $(WORK)/shopping-diag
+mutation-check:
+	cargo build --profile quick --locked --no-default-features --features mutate
+	cp target/quick/shopping-sessions $(WORK)/shopping-mutate
+	$(PY) tools/symptoms.py --bin $(WORK)/shopping-mutate --output $(WORK)/mutations.json
+diff: native generator
+	$(PY) tools/differential.py --bin $(BIN) --levels $(LEVELS) --modes $(MODES) --output $(WORK)/diff.json
+bench:
+	$(PY) tools/bench.py native --runs 3 -- $(CMD)

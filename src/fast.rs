@@ -132,9 +132,17 @@ pub fn run(config: &Config, files: &Files, r: &Refs) -> Result<(Vec<Batch>, Coun
                 counts: Counters::default(),
             },
             |state, (event, i, start, end)| {
-                input::lines(maps[i].data(), start, end, |_, line| {
+                input::lines(maps[i].data(), start, end, |_offset, line| {
                     if event {
-                        match record::event(line, r) {
+                        let outcome = record::event(line, r);
+                        #[cfg(feature = "diag")]
+                        crate::diag::raw::<7>(
+                            &maps[i].path,
+                            _offset,
+                            line,
+                            (outcome.as_ref().map(|(_, c)| c.fate).unwrap_or_else(|f| *f)).label(),
+                        );
+                        match outcome {
                             Ok((key, c)) => {
                                 state.counts.events[c.fate as usize] += 1;
                                 state.buckets[key.bucket(config.event_buckets)].push((key, c));
@@ -142,7 +150,15 @@ pub fn run(config: &Config, files: &Files, r: &Refs) -> Result<(Vec<Batch>, Coun
                             Err(f) => state.counts.events[f as usize] += 1,
                         }
                     } else {
-                        match record::click(line, r) {
+                        let outcome = record::click(line, r);
+                        #[cfg(feature = "diag")]
+                        crate::diag::raw::<4>(
+                            &maps[i].path,
+                            _offset,
+                            line,
+                            (outcome.as_ref().map(|_| Fate::Valid).unwrap_or_else(|f| *f)).label(),
+                        );
+                        match outcome {
                             Ok(c) => {
                                 state.counts.clicks[0] += 1;
                                 state.clicks.push(c);
@@ -193,25 +209,32 @@ pub fn run(config: &Config, files: &Files, r: &Refs) -> Result<(Vec<Batch>, Coun
             Job::Clicks(clicks) => {
                 for (u, c) in clicks {
                     let name = *names.get(&u).unwrap_or(&u);
+                    #[cfg(feature = "diag")]
+                    crate::diag::click(name, &c, r);
                     state.clicks[name.bucket(config.person_buckets)].push((name, c));
                 }
             }
             Job::Events(vectors) => {
-                let mut raw = Vec::with_capacity(vectors.iter().map(Vec::len).sum());
-                for mut v in vectors {
-                    raw.append(&mut v);
+                let size = vectors.iter().map(Vec::len).sum::<usize>();
+                let mut winners: Map<IdKey, Candidate> =
+                    Map::with_capacity_and_hasher(size, Default::default());
+                for (id, candidate) in vectors.into_iter().flatten() {
+                    winners
+                        .entry(id)
+                        .and_modify(|w| {
+                            if candidate.ingest == w.ingest && candidate != *w {
+                                state.counts.equal_diff += 1;
+                            }
+                            if candidate.ingest < w.ingest {
+                                *w = candidate;
+                            }
+                        })
+                        .or_insert(candidate);
                 }
-                raw.sort_unstable_by(|a, b| {
-                    a.0.cmp_bytes(&b.0)
-                        .then_with(|| a.1.ingest.cmp(&b.1.ingest))
-                });
-                for group in raw.chunk_by(|a, b| a.0 == b.0) {
-                    let c = group[0].1;
+                for (_id, c) in winners {
+                    #[cfg(feature = "diag")]
+                    crate::diag::winner(_id, &c, r);
                     state.counts.winners[c.fate as usize] += 1;
-                    state.counts.equal_diff += group[1..]
-                        .iter()
-                        .filter(|(_, o)| o.ingest == c.ingest && *o != c)
-                        .count() as u64;
                     if c.fate == Fate::Valid {
                         let name = *names.get(&c.user).unwrap_or(&c.user);
                         state.events[name.bucket(config.person_buckets)].push((name, c.event));
@@ -239,20 +262,28 @@ pub fn run(config: &Config, files: &Files, r: &Refs) -> Result<(Vec<Batch>, Coun
     }
     buckets.retain(|b| !b.events.is_empty());
     buckets.sort_unstable_by_key(|b| std::cmp::Reverse(b.size));
-    let batches = workers(buckets, t, Batch::default, |state, shard| {
-        let mut people: Map<IdKey, Person> = Map::default();
-        for (name, e) in shard.events.into_iter().flatten() {
-            people.entry(name).or_default().events.push(e);
-        }
-        for (name, c) in shard.clicks.into_iter().flatten() {
-            if let Some(p) = people.get_mut(&name) {
-                p.clicks.push(c);
+    let batches = workers(
+        buckets,
+        t,
+        || Batch {
+            campaigns: crate::campaign::CampaignDays::new(r, t, config.budget),
+            ..Batch::default()
+        },
+        |state, shard| {
+            let mut people: Map<IdKey, Person> = Map::default();
+            for (name, e) in shard.events.into_iter().flatten() {
+                people.entry(name).or_default().events.push(e);
             }
-        }
-        for (name, mut p) in people {
-            person::process(name, &mut p.events, &mut p.clicks, r, state);
-        }
-    })?;
+            for (name, c) in shard.clicks.into_iter().flatten() {
+                if let Some(p) = people.get_mut(&name) {
+                    p.clicks.push(c);
+                }
+            }
+            for (name, mut p) in people {
+                person::process(name, &mut p.events, &mut p.clicks, r, state);
+            }
+        },
+    )?;
     eprintln!(
         "{}",
         serde_json::json!({"parse_links_s":parse_secs,"partition_s":bucket_secs,"session_s":started.elapsed().as_secs_f64()-bucket_secs-parse_secs})

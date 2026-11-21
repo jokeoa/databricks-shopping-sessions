@@ -10,6 +10,7 @@ import polars as pl
 
 from leaf import DAY, WEEK, lines, price, stamp
 from links import names
+from dumps import fate, raw
 
 USER_SCHEMA = {
     "user_id": pl.String,
@@ -59,13 +60,17 @@ def sessions(events):
         yield group
 
 
-def run(data: Path, output: Path, session_sink=None):
+def run(data: Path, output: Path, dump=None, rows_only=False):
     manifest = json.loads((data / "manifest.json").read_bytes())
     first, end = (
         stamp(manifest[k].encode(), f1=True)[1] for k in ("window_start", "window_end")
     )
     people = names(sorted((data / "links").glob("*.csv")))
     products, channels = (lookup(data / p) for p in ("products.csv", "campaigns.csv"))
+    if dump:
+        raw(dump, data, people, first, end, channels)
+    if rows_only:
+        return
     channels[b"organic"] = b"organic"
     user_rows = []
     totals = defaultdict(lambda: [0, 0, 0, 0])
@@ -91,6 +96,17 @@ def run(data: Path, output: Path, session_sink=None):
         def valid_events():
             for fields in db.execute("SELECT * FROM winners"):
                 row = event(fields, first, end, products)
+                if dump:
+                    dump.put(
+                        "B3",
+                        fields[0],
+                        stamp(fields[3], True)[1],
+                        fate(fields, "events", first, end, channels),
+                        fields[1],
+                        row[1] if row else None,
+                        row[2] if row else 0,
+                        row[3] if row and row[2] else None,
+                    )
                 if row:
                     user, ts, cents, cat = row
                     yield people.get(user, user), ts, cents, cat
@@ -109,6 +125,9 @@ def run(data: Path, output: Path, session_sink=None):
             db.executemany(
                 "INSERT OR IGNORE INTO clicks VALUES(?,?,?,?)", valid_clicks()
             )
+        if dump:
+            for click in db.execute("SELECT id,person,ts,campaign FROM clicks"):
+                dump.put("B4", *click)
         db.execute("CREATE INDEX click_order ON clicks(person,ts)")
         for person, rows in itertools.groupby(
             db.execute("SELECT * FROM events ORDER BY person,ts"), key=lambda x: x[0]
@@ -147,13 +166,26 @@ def run(data: Path, output: Path, session_sink=None):
                 campaign_row[2] += revenue
                 for campaign in assists:
                     totals[campaign, day][3] += 1
-                if session_sink:
-                    session_sink(
-                        person, start, day, len(group), revenue, best, sorted(assists)
+                if dump:
+                    dump.put(
+                        "B5",
+                        person,
+                        start,
+                        day,
+                        len(group),
+                        revenue,
+                        int(bool(revenue)),
+                        best,
+                        *sorted(assists),
                     )
             for day, (count, events, cents, cats) in by_day.items():
                 top = min(cats, key=lambda x: (-cats[x], x)).decode() if cats else None
+                if dump:
+                    dump.put("B6-user", person, day, count, events, cents, top)
                 user_rows.append((person.decode(), day, count, events, cents, top))
+    if dump:
+        for (campaign, day), values in totals.items():
+            dump.put("B6-campaign", campaign, day, channels[campaign], *values)
     campaign_rows = [
         (c.decode(), channels[c].decode(), day, *values)
         for (c, day), values in totals.items()

@@ -1,3 +1,4 @@
+pub mod campaign;
 pub mod config;
 pub mod csv;
 pub mod input;
@@ -34,10 +35,14 @@ pub fn mutation(id: &str) -> bool {
         false
     }
 }
+#[cfg(feature = "diag")]
+pub mod diag;
 pub mod fast;
 
 pub fn run(config: &config::Config) -> Result<()> {
     let start = std::time::Instant::now();
+    #[cfg(feature = "diag")]
+    diag::init(&config.data)?;
     let files = input::Files::new(&config.data)?;
     let sizes = files.bytes()?;
     let r = refdata::Refs::load(&config.data)?;
@@ -52,6 +57,8 @@ pub fn run(config: &config::Config) -> Result<()> {
     };
     let before = std::time::Instant::now();
     output::publish(&config.out, batches, &r)?;
+    #[cfg(feature = "diag")]
+    diag::finish()?;
     eprintln!("{}", counters.json());
     eprintln!(
         "{}",

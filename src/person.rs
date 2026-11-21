@@ -22,7 +22,7 @@ pub struct UserDay {
 #[derive(Default)]
 pub struct Batch {
     pub users: Vec<UserDay>,
-    pub campaigns: Map<(usize, i32), [i64; 4]>,
+    pub campaigns: crate::campaign::CampaignDays,
     pub assist_pairs: u64,
     pub max_active: usize,
     pub max_events: usize,
@@ -118,12 +118,25 @@ pub fn process(
         } else {
             clicks[hi - 1].campaign
         };
-        let credit = batch.campaigns.entry((winner, day)).or_default();
+        #[cfg(feature = "diag")]
+        crate::diag::session(
+            crate::diag::Session {
+                name,
+                start,
+                day,
+                events: at - first,
+                cents: revenue,
+                winner,
+            },
+            active.keys().copied(),
+            r,
+        );
+        let credit = batch.campaigns.get(winner, day);
         credit[0] += 1;
         credit[1] += i64::from(revenue > 0);
         credit[2] += revenue;
         for campaign in active.keys() {
-            batch.campaigns.entry((*campaign, day)).or_default()[3] += 1;
+            batch.campaigns.get(*campaign, day)[3] += 1;
         }
         batch.assist_pairs += active.len() as u64;
         batch.max_active = batch.max_active.max(active.len());

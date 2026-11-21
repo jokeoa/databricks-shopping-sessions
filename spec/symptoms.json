@@ -1,0 +1,368 @@
+[
+  {
+    "id": "reverse_click_tie",
+    "rule": "CL.TIE_CLICK_ID",
+    "fixture": "A5",
+    "table": "campaign_daily",
+    "mode": "simple",
+    "process_status": 0,
+    "comparison_status": 1,
+    "expected": [
+      [
+        "c_1",
+        "search",
+        "2026-10-03",
+        1,
+        0,
+        0,
+        1
+      ],
+      [
+        "c_2",
+        "social",
+        "2026-10-03",
+        0,
+        0,
+        0,
+        1
+      ]
+    ],
+    "observed": [
+      [
+        "c_1",
+        "search",
+        "2026-10-03",
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        "c_2",
+        "social",
+        "2026-10-03",
+        1,
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  {
+    "id": "reverse_click_tie",
+    "rule": "CL.TIE_CLICK_ID",
+    "fixture": "A5",
+    "table": "campaign_daily",
+    "mode": "fast",
+    "process_status": 0,
+    "comparison_status": 1,
+    "expected": [
+      [
+        "c_1",
+        "search",
+        "2026-10-03",
+        1,
+        0,
+        0,
+        1
+      ],
+      [
+        "c_2",
+        "social",
+        "2026-10-03",
+        0,
+        0,
+        0,
+        1
+      ]
+    ],
+    "observed": [
+      [
+        "c_1",
+        "search",
+        "2026-10-03",
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        "c_2",
+        "social",
+        "2026-10-03",
+        1,
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  {
+    "id": "gap_inclusive",
+    "rule": "EV.SESSION_GAP",
+    "fixture": "E1",
+    "table": "user_daily",
+    "mode": "simple",
+    "process_status": 0,
+    "comparison_status": 1,
+    "expected": [
+      [
+        "u1",
+        "2026-10-03",
+        1,
+        2,
+        0,
+        null
+      ]
+    ],
+    "observed": [
+      [
+        "u1",
+        "2026-10-03",
+        2,
+        2,
+        0,
+        null
+      ]
+    ]
+  },
+  {
+    "id": "gap_inclusive",
+    "rule": "EV.SESSION_GAP",
+    "fixture": "E1",
+    "table": "user_daily",
+    "mode": "fast",
+    "process_status": 0,
+    "comparison_status": 1,
+    "expected": [
+      [
+        "u1",
+        "2026-10-03",
+        1,
+        2,
+        0,
+        null
+      ]
+    ],
+    "observed": [
+      [
+        "u1",
+        "2026-10-03",
+        2,
+        2,
+        0,
+        null
+      ]
+    ]
+  },
+  {
+    "id": "exclude_week",
+    "rule": "CL.SEVEN_DAYS",
+    "fixture": "A2",
+    "table": "campaign_daily",
+    "mode": "simple",
+    "process_status": 0,
+    "comparison_status": 1,
+    "expected": [
+      [
+        "c_1",
+        "search",
+        "2026-10-03",
+        1,
+        0,
+        0,
+        1
+      ],
+      [
+        "organic",
+        "organic",
+        "2026-10-03",
+        1,
+        0,
+        0,
+        0
+      ]
+    ],
+    "observed": [
+      [
+        "organic",
+        "organic",
+        "2026-10-03",
+        2,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  {
+    "id": "exclude_week",
+    "rule": "CL.SEVEN_DAYS",
+    "fixture": "A2",
+    "table": "campaign_daily",
+    "mode": "fast",
+    "process_status": 0,
+    "comparison_status": 1,
+    "expected": [
+      [
+        "c_1",
+        "search",
+        "2026-10-03",
+        1,
+        0,
+        0,
+        1
+      ],
+      [
+        "organic",
+        "organic",
+        "2026-10-03",
+        1,
+        0,
+        0,
+        0
+      ]
+    ],
+    "observed": [
+      [
+        "organic",
+        "organic",
+        "2026-10-03",
+        2,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  {
+    "id": "validate_first",
+    "rule": "EV.DEDUP_BEFORE_VALIDATE",
+    "fixture": "E5",
+    "table": "user_daily",
+    "mode": "simple",
+    "process_status": 0,
+    "comparison_status": 1,
+    "expected": [],
+    "observed": [
+      [
+        "u1",
+        "2026-10-03",
+        1,
+        1,
+        0,
+        null
+      ]
+    ]
+  },
+  {
+    "id": "validate_first",
+    "rule": "EV.DEDUP_BEFORE_VALIDATE",
+    "fixture": "E5",
+    "table": "user_daily",
+    "mode": "fast",
+    "process_status": 0,
+    "comparison_status": 1,
+    "expected": [],
+    "observed": [
+      [
+        "u1",
+        "2026-10-03",
+        1,
+        1,
+        0,
+        null
+      ]
+    ]
+  },
+  {
+    "id": "first_name",
+    "rule": "LNK.NAME_MIN",
+    "fixture": "L2",
+    "table": "user_daily",
+    "mode": "simple",
+    "process_status": 0,
+    "comparison_status": 1,
+    "expected": [
+      [
+        "U7",
+        "2026-10-03",
+        1,
+        2,
+        0,
+        null
+      ],
+      [
+        "u10",
+        "2026-10-04",
+        1,
+        1,
+        0,
+        null
+      ]
+    ],
+    "observed": [
+      [
+        "u10",
+        "2026-10-04",
+        1,
+        1,
+        0,
+        null
+      ],
+      [
+        "u3",
+        "2026-10-03",
+        1,
+        2,
+        0,
+        null
+      ]
+    ]
+  },
+  {
+    "id": "first_name",
+    "rule": "LNK.NAME_MIN",
+    "fixture": "L2",
+    "table": "user_daily",
+    "mode": "fast",
+    "process_status": 0,
+    "comparison_status": 1,
+    "expected": [
+      [
+        "U7",
+        "2026-10-03",
+        1,
+        2,
+        0,
+        null
+      ],
+      [
+        "u10",
+        "2026-10-04",
+        1,
+        1,
+        0,
+        null
+      ]
+    ],
+    "observed": [
+      [
+        "u10",
+        "2026-10-04",
+        1,
+        1,
+        0,
+        null
+      ],
+      [
+        "u3",
+        "2026-10-03",
+        1,
+        2,
+        0,
+        null
+      ]
+    ]
+  }
+]

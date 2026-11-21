@@ -1,0 +1,47 @@
+[[case]]
+name = "public-small"
+tier = "T2"
+seed = 1
+events = 10000
+clicks = 2500
+scale = 1
+
+[[case]]
+name = "leap-day"
+tier = "T2"
+seed = 15
+events = 30000
+clicks = 15000
+scale = 1
+
+[[case]]
+name = "new-year"
+tier = "T2"
+seed = 29
+events = 20000
+clicks = 2500
+scale = 1
+
+[[case]]
+name = "amplified-dirt"
+tier = "T2"
+seed = 5
+events = 100000
+clicks = 25000
+scale = 8
+
+[[case]]
+name = "one-million-half-clicks"
+tier = "T3"
+seed = 15
+events = 1000000
+clicks = 500000
+scale = 1
+
+[[case]]
+name = "one-million-eighth-clicks"
+tier = "T3"
+seed = 29
+events = 1000000
+clicks = 125000
+scale = 1

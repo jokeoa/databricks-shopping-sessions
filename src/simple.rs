@@ -12,8 +12,16 @@ pub fn run(files: &Files, names: &Names, r: &Refs) -> Result<(Vec<Batch>, Counte
     let mut counts = Counters::default();
     for path in &files.events {
         let data = input::read(path)?;
-        input::lines(&data, 0, data.len(), |_, line| {
-            match record::event(line, r) {
+        input::lines(&data, 0, data.len(), |_offset, line| {
+            let outcome = record::event(line, r);
+            #[cfg(feature = "diag")]
+            crate::diag::raw::<7>(
+                path,
+                _offset,
+                line,
+                (outcome.as_ref().map(|(_, c)| c.fate).unwrap_or_else(|f| *f)).label(),
+            );
+            match outcome {
                 Ok((key, c)) => {
                     counts.events[c.fate as usize] += 1;
                     winners
@@ -33,7 +41,9 @@ pub fn run(files: &Files, names: &Names, r: &Refs) -> Result<(Vec<Batch>, Counte
         });
     }
     let mut people: Map<IdKey, Person> = Map::default();
-    for (_, c) in winners {
+    for (_id, c) in winners {
+        #[cfg(feature = "diag")]
+        crate::diag::winner(_id, &c, r);
         counts.winners[c.fate as usize] += 1;
         if c.fate == Fate::Valid {
             people
@@ -45,9 +55,19 @@ pub fn run(files: &Files, names: &Names, r: &Refs) -> Result<(Vec<Batch>, Counte
     }
     for path in &files.clicks {
         let data = input::read(path)?;
-        input::lines(&data, 0, data.len(), |_, line| {
-            match record::click(line, r) {
+        input::lines(&data, 0, data.len(), |_offset, line| {
+            let outcome = record::click(line, r);
+            #[cfg(feature = "diag")]
+            crate::diag::raw::<4>(
+                path,
+                _offset,
+                line,
+                (outcome.as_ref().map(|_| Fate::Valid).unwrap_or_else(|f| *f)).label(),
+            );
+            match outcome {
                 Ok((user, click)) => {
+                    #[cfg(feature = "diag")]
+                    crate::diag::click(*names.get(&user).unwrap_or(&user), &click, r);
                     counts.clicks[0] += 1;
                     people
                         .entry(*names.get(&user).unwrap_or(&user))

@@ -52,7 +52,16 @@ pub fn load(files: &[PathBuf]) -> Result<Names> {
     };
     for path in files {
         let bytes = input::read(path)?;
-        input::lines(&bytes, 0, bytes.len(), |_, line| {
+        input::lines(&bytes, 0, bytes.len(), |_offset, line| {
+            #[cfg(feature = "diag")]
+            {
+                let fate = match split_line::<2>(line) {
+                    Err(f) => f.label(),
+                    Ok([a, b]) if a.is_empty() || b.is_empty() => "empty_person",
+                    _ => "valid",
+                };
+                crate::diag::raw::<2>(path, _offset, line, fate);
+            }
             if let Ok([a, b]) = split_line::<2>(line)
                 && !a.is_empty()
                 && !b.is_empty()
@@ -66,6 +75,8 @@ pub fn load(files: &[PathBuf]) -> Result<Names> {
         .into_iter()
         .map(|(k, i)| {
             let root = g.root(i);
+            #[cfg(feature = "diag")]
+            crate::diag::link(k, g.names[root]);
             (k, g.names[root])
         })
         .collect())
