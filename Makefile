@@ -31,7 +31,8 @@ check-dev: build dev
 .PHONY: readers-check scaffold-smoke
 readers-check: native
 	$(PY) tools/check_outputs.py $(BIN)
-scaffold-smoke: readers-check
+scaffold-smoke: readers-check build
+	IMAGE=$(IMAGE) $(PY) tools/check_outputs.py tools/container_run.sh
 	cargo test --locked --test output_contract
 
 .PHONY: diff leaf-corpus mutation-check diag bench
@@ -50,3 +51,37 @@ diff: native generator
 	$(PY) tools/differential.py --bin $(BIN) --levels $(LEVELS) --modes $(MODES) --output $(WORK)/diff.json
 bench:
 	$(PY) tools/bench.py native --runs 3 -- $(CMD)
+
+.PHONY: fuzz miri
+fuzz:
+	tools/fuzz.sh
+miri:
+	cargo +nightly miri test --locked --test miri_small
+
+.PHONY: registry-oracle registry-full generator-check metamorph rows-oracle sample-oracle scan-bench
+DATA ?= testdata/fixtures/A11/input
+DIAG_BIN ?= $(WORK)/shopping-diag
+registry-oracle:
+	$(PY) tools/check_registry.py --scope oracle
+registry-full:
+	$(PY) tools/check_registry.py --scope full
+generator-check: generator
+	$(PY) tools/generator/check.py
+metamorph: diag
+	$(PY) tools/metamorph.py $(DATA) --bin $(DIAG_BIN)
+rows-oracle sample-oracle: diag
+	cargo build --profile quick --locked
+	@for m in simple fast; do $(PY) tools/diagnose.py $(DATA) --diag $(DIAG_BIN) --release $(BIN) --mode $$m --kind $(if $(filter rows-oracle,$@),rows,sample) || exit 1; done
+scan-bench: diag
+	$(PY) tools/scan_bench.py $(DATA) --bin $(DIAG_BIN) --receipt $(WORK)/scan.json
+
+.PHONY: presubmit qualify-simple qualify-fast
+TAG ?=
+MODE ?= fast
+SCOPE ?= bounded
+presubmit:
+	$(PY) tools/qualification.py $(if $(TAG),--tag "$(TAG)") --mode "$(MODE)" --scope "$(SCOPE)" $(if $(IMAGE_RECEIPT),--image-receipt "$(IMAGE_RECEIPT)") $(if $(LARGE_RECEIPTS),--large-receipts $(LARGE_RECEIPTS)) $(if $(DIAGNOSTIC_RECEIPTS),--diagnostic-receipts $(DIAGNOSTIC_RECEIPTS))
+qualify-simple: registry-full oracle-fixtures
+	$(MAKE) presubmit MODE=simple
+qualify-fast: registry-full oracle-fixtures leaf-corpus mutation-check
+	$(MAKE) presubmit MODE=fast

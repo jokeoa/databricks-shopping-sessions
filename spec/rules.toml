@@ -1,0 +1,469 @@
+[[rule]]
+id = "CSV.FILES"
+line = 18
+quote = "Read every"
+fixtures = ["E4", "X13"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:lines"
+rust = "src/input.rs:files"
+reason = "input"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CSV.LF"
+line = 22
+quote = "Only"
+fixtures = ["E20", "X5"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:lines"
+rust = "src/input.rs:lines"
+reason = "raw"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CSV.CR"
+line = 22
+quote = "ordinary character"
+fixtures = ["E20"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:lines"
+rust = "src/csv.rs:split_line"
+reason = "raw"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CSV.FIELD_COUNT"
+line = 22
+quote = "wrong number of fields"
+fixtures = ["E13", "X3"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:split"
+rust = "src/csv.rs:split_line"
+reason = "field_count"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CSV.QUOTES"
+line = 22
+quote = "around a whole field"
+fixtures = ["E13", "X3"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:split"
+rust = "src/csv.rs:split_line"
+reason = "quote"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CSV.EMPTY"
+line = 22
+quote = "empty field means null"
+fixtures = ["X9", "X14"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:split"
+rust = "src/csv.rs:split_line"
+reason = "missing_id"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CSV.SPACES"
+line = 22
+quote = "Spaces are part"
+fixtures = ["E19"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:split"
+rust = "src/csv.rs:split_line"
+reason = "raw"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CSV.ASCII"
+line = 22
+quote = "ASCII"
+fixtures = ["E16", "E17", "X1"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:digits"
+rust = "src/price.rs:parse"
+reason = "bad_price"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "TS.F1"
+line = 30
+quote = "UTC"
+fixtures = ["E7"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:stamp"
+rust = "src/ts.rs:f1"
+reason = "bad_time"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "TS.F2"
+line = 31
+quote = "Offset"
+fixtures = ["E7", "X6"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:stamp"
+rust = "src/ts.rs:parse"
+reason = "bad_time"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "TS.F3"
+line = 32
+quote = "Leading zeros"
+fixtures = ["E18", "X1"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:stamp"
+rust = "src/ts.rs:parse"
+reason = "outside"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "TS.CALENDAR"
+line = 34
+quote = "impossible calendar"
+fixtures = ["E17", "X6"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:stamp"
+rust = "src/ts.rs:parse"
+reason = "bad_time"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "EV.WINDOW"
+line = 36
+quote = "window_start"
+fixtures = ["E8", "A10"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:event"
+rust = "src/record.rs:timestamp"
+reason = "outside"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "LNK.PARSE"
+line = 42
+quote = "either field is empty"
+fixtures = ["L3", "X9"]
+coverage = "fixture"
+oracle = "oracle/links.py:names"
+rust = "src/links.rs:load"
+reason = "empty_person"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "LNK.TRANSITIVE"
+line = 43
+quote = "transitive"
+fixtures = ["L1", "L2", "L4"]
+coverage = "fixture"
+oracle = "oracle/links.py:names"
+rust = "src/links.rs:union"
+reason = "component"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "LNK.REPEAT_SELF"
+line = 43
+quote = "may repeat"
+fixtures = ["L2", "L3"]
+coverage = "fixture"
+oracle = "oracle/links.py:names"
+rust = "src/links.rs:union"
+reason = "component"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "equivalent"
+proof = "Union on identical roots returns the existing component."
+
+[[rule]]
+id = "LNK.NAME_MIN"
+line = 44
+quote = "byte-wise smallest"
+fixtures = ["L2", "X4", "X8"]
+coverage = "fixture"
+oracle = "oracle/links.py:names"
+rust = "src/key.rs:cmp_bytes"
+reason = "component"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "EV.ID"
+line = 50
+quote = "event_id"
+fixtures = ["E13", "X9"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/record.rs:event"
+reason = "missing_id"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "EV.DEDUP_BEFORE_VALIDATE"
+line = 51
+quote = "Dedup comes before validation"
+fixtures = ["E4", "E5", "X7"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/record.rs:event"
+reason = "event_winners"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "EV.USER"
+line = 52
+quote = "user_id"
+fixtures = ["E11", "X7"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:event"
+rust = "src/record.rs:validate"
+reason = "empty_person"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "EV.TYPE"
+line = 52
+quote = "event_type"
+fixtures = ["E10", "X9"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:event"
+rust = "src/record.rs:validate"
+reason = "bad_type"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "EV.PRODUCT"
+line = 52
+quote = "product_id"
+fixtures = ["E9", "X9"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:event"
+rust = "src/record.rs:validate"
+reason = "empty_product"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "EV.PRICE"
+line = 52
+quote = "digits only"
+fixtures = ["E10", "E16", "X1"]
+coverage = "fixture"
+oracle = "oracle/leaf.py:price"
+rust = "src/price.rs:parse"
+reason = "bad_price"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "EV.LATE"
+line = 53
+quote = "over 24 hours"
+fixtures = ["E6"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:event"
+rust = "src/record.rs:validate"
+reason = "late"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "EV.SESSION_GAP"
+line = 54
+quote = "over 30 minutes"
+fixtures = ["E1", "E2", "E12"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:sessions"
+rust = "src/person.rs:process"
+reason = "sessions"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "EV.START_DAY"
+line = 55
+quote = "UTC date of its start"
+fixtures = ["E3"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:sessions"
+rust = "src/person.rs:process"
+reason = "sessions"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "EV.CATEGORY"
+line = 56
+quote = "unknown"
+fixtures = ["E9", "X12"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:event"
+rust = "src/record.rs:validate"
+reason = "revenue_cents"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CL.ID"
+line = 60
+quote = "click_id"
+fixtures = ["X14", "X9"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/record.rs:click"
+reason = "missing_id"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CL.DEDUP"
+line = 61
+quote = "identical values"
+fixtures = ["A10", "X2"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/person.rs:process"
+reason = "logical_clicks"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "equivalent"
+proof = "Production preserves identical copies. Maximum timestamp, minimum ID and distinct active campaign membership are all idempotent."
+
+[[rule]]
+id = "CL.CAMPAIGN"
+line = 62
+quote = "campaign_id"
+fixtures = ["A6"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/record.rs:click"
+reason = "unknown_campaign"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CL.TIE_CLICK_ID"
+line = 63
+quote = "smallest"
+fixtures = ["A5", "X4", "X11"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/person.rs:process"
+reason = "sessions"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CL.SEVEN_DAYS"
+line = 63
+quote = "7 days"
+fixtures = ["A2", "A4", "A10"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/person.rs:process"
+reason = "sessions"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CL.ORGANIC"
+line = 64
+quote = "organic"
+fixtures = ["A6", "X14"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/person.rs:process"
+reason = "sessions"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CL.REUSE"
+line = 65
+quote = "many sessions"
+fixtures = ["A8", "A9"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/person.rs:process"
+reason = "sessions"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "CL.ASSISTS"
+line = 66
+quote = "once"
+fixtures = ["A11", "A12", "X2"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/person.rs:process"
+reason = "assist_pairs"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "OUT.PARQUET"
+line = 72
+quote = "parquet"
+fixtures = ["E5", "E13"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/output.rs:publish"
+reason = "rows"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "OUT.TOP_CATEGORY"
+line = 83
+quote = "highest summed"
+fixtures = ["E8", "X12"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/person.rs:flush"
+reason = "top_category"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "OUT.ONLY_ASSISTS"
+line = 85
+quote = "only assisted"
+fixtures = ["A11", "A12"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/person.rs:process"
+reason = "assist_pairs"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"
+
+[[rule]]
+id = "OUT.TOTALS"
+line = 97
+quote = "summed"
+fixtures = ["E8", "A11"]
+coverage = "fixture"
+oracle = "oracle/pipeline.py:run"
+rust = "src/output.rs:publish"
+reason = "sessions"
+test = "tests/fixtures.rs:both_drivers_match_all_hand_written_cases"
+status = "implemented"

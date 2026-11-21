@@ -1,0 +1,41 @@
+[package]
+name = "shopping-sessions-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+shopping-sessions = { path = ".." }
+foldhash = "0.2"
+
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "split_line"
+path = "fuzz_targets/split_line.rs"
+test = false
+doc = false
+bench = false
+[[bin]]
+name = "parse_ts"
+path = "fuzz_targets/parse_ts.rs"
+test = false
+doc = false
+bench = false
+[[bin]]
+name = "parse_price"
+path = "fuzz_targets/parse_price.rs"
+test = false
+doc = false
+bench = false
+[[bin]]
+name = "key_order"
+path = "fuzz_targets/key_order.rs"
+test = false
+doc = false
+bench = false

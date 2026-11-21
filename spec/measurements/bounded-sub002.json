@@ -1,0 +1,139 @@
+{
+  "sha": "510ef32e5d1f71a5520faf01caf4d0b7a03146be",
+  "tag": "sub-002",
+  "mode": "fast",
+  "scope": "bounded",
+  "checks": [
+    {
+      "check": "build",
+      "status": 0,
+      "seconds": 1.905
+    },
+    {
+      "check": "generate",
+      "status": 0,
+      "seconds": 0.469
+    },
+    {
+      "check": "default-dev",
+      "status": 0,
+      "seconds": 0.665
+    },
+    {
+      "check": "fixtures",
+      "status": 0,
+      "seconds": 10.637
+    },
+    {
+      "check": "fixtures-extra",
+      "status": 0,
+      "seconds": 4.071
+    },
+    {
+      "check": "rust-tests",
+      "status": 0,
+      "seconds": 19.403
+    },
+    {
+      "check": "clippy",
+      "status": 0,
+      "seconds": 5.197
+    },
+    {
+      "check": "fmt",
+      "status": 0,
+      "seconds": 0.114
+    },
+    {
+      "check": "native-build",
+      "status": 0,
+      "seconds": 25.953
+    },
+    {
+      "check": "native-dev",
+      "status": 0,
+      "seconds": 0.489
+    },
+    {
+      "check": "three-readers",
+      "status": 0,
+      "seconds": 0.382
+    },
+    {
+      "check": "registry-oracle",
+      "status": 0,
+      "seconds": 0.046
+    },
+    {
+      "check": "registry-full",
+      "status": 0,
+      "seconds": 0.043
+    },
+    {
+      "check": "verification-tools",
+      "status": 0,
+      "seconds": 0.26
+    },
+    {
+      "check": "python-dev",
+      "status": 0,
+      "seconds": 18.596
+    },
+    {
+      "check": "differential",
+      "status": 0,
+      "seconds": 38.971
+    },
+    {
+      "check": "diagnostic-build",
+      "status": 0,
+      "seconds": 4.827
+    },
+    {
+      "check": "leaf-corpus",
+      "status": 0,
+      "seconds": 0.476
+    },
+    {
+      "check": "dirty-data",
+      "status": 0,
+      "seconds": 0.015
+    },
+    {
+      "check": "stages-simple",
+      "status": 0,
+      "seconds": 1.423
+    },
+    {
+      "check": "stages-fast",
+      "status": 0,
+      "seconds": 1.386
+    },
+    {
+      "check": "metamorphic",
+      "status": 0,
+      "seconds": 5.907
+    },
+    {
+      "check": "negative-controls",
+      "status": 0,
+      "seconds": 0.228
+    },
+    {
+      "check": "mutation-build",
+      "status": 0,
+      "seconds": 4.032
+    },
+    {
+      "check": "mutations",
+      "status": 0,
+      "seconds": 2.218
+    }
+  ],
+  "image": "sha256:fcd7f474a5feda7429e335b7b98ddf6c8b591d0647a109b22a06336e58400867",
+  "dev_input_sha256": "cb10a0509824f7500edb7289f8a5c7534da6a72610c7997501b13d314fbeea00",
+  "default_mode": "fast",
+  "build": "ededc140c4f5f920",
+  "dev_match": true,
+  "linux_memory_and_time": "outside requested local memory budget"
+}

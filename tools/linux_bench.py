@@ -33,6 +33,7 @@ def prepare_cache(root, mode):
             continue
         with p.open("rb") as f:
             if mode == "cold":
+                os.fsync(f.fileno())
                 os.posix_fadvise(f.fileno(), 0, 0, os.POSIX_FADV_DONTNEED)
             else:
                 while f.read(1 << 20):
@@ -119,6 +120,12 @@ def series(a):
     build = revision_build_id(sha)
     receipt = {
         "image": identity,
+        "machine": {
+            "node": platform.node(),
+            "arch": platform.machine(),
+            "kernel": platform.release(),
+            "boot": Path("/proc/sys/kernel/random/boot_id").read_text().strip(),
+        },
         "sha": sha,
         "build": build,
         "seed": a.seed,

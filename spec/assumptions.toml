@@ -1,0 +1,24 @@
+[[assumption]]
+id="ASM.ID_LEN_15"
+check="src/key.rs:encode"
+general="Intern complete bytes of longer IDs and compare them through the overflow table."
+evidence="X4"
+
+[[assumption]]
+id="ASM.SORT_KEY_31"
+check="src/person.rs:process"
+general="The submitted path always sorts on the full signed timestamp, including a wide window."
+evidence="tests/person_stage.rs:wide_category_ranks_and_sparse_campaigns"
+
+[[assumption]]
+id="ASM.CAMPAIGN_DAY_DENSE"
+check="src/campaign.rs:new"
+general="Use a sparse map when the checked dense allocation exceeds eight million cells or its share of the memory budget."
+evidence="tests/person_stage.rs:wide_category_ranks_and_sparse_campaigns"
+
+[[assumption]]
+id="ASM.EQUAL_COPIES"
+check="src/fast.rs:run"
+general="Keep minimum ingest and report different payloads at equal ingest."
+counter="equal_ingest_projection_diff"
+evidence="E4"

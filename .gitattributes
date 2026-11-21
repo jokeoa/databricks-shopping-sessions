@@ -1,3 +1,4 @@
 testdata/**/input/*.csv -text
 testdata/**/input/**/*.csv -text
 testdata/**/expected/*.csv -text
+fuzz/corpus/** binary

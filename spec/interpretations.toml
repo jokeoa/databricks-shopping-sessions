@@ -1,0 +1,41 @@
+[[interpretation]]
+id="CSV.HEADER_BY_POSITION"
+reading="Skip only the physical record at offset zero in each input file."
+evidence="L3"
+confirmed_by_organizer=false
+
+[[interpretation]]
+id="CSV.LAST_LINE_NO_LF"
+reading="Process the final unterminated record."
+evidence="X5"
+confirmed_by_organizer=false
+
+[[interpretation]]
+id="EV.EQUAL_COPIES"
+reading="Keep any equal-ingest copy. Count differing projections as an upstream inconsistency."
+evidence="rules.md:51"
+confirmed_by_organizer=true
+
+[[interpretation]]
+id="CL.COPIES_IDENTICAL"
+reading="Identical copies produce the same winner and distinct assist set."
+evidence="X2"
+confirmed_by_organizer=true
+
+[[interpretation]]
+id="EV.INGEST_TS_INVALID"
+reading="Reject a candidate before deduplication when its ingestion timestamp fails strict F1."
+evidence="X9"
+confirmed_by_organizer=false
+
+[[interpretation]]
+id="INPUT.FILE_SET"
+reading="Read directly contained, ordinary files with a case-sensitive .csv suffix; dot-prefixed input names qualify."
+evidence="X13"
+confirmed_by_organizer=false
+
+[[interpretation]]
+id="INPUT.UTF8"
+reading="Input strings are UTF-8 as guaranteed in the rules. Compare original bytes."
+evidence="rules.md:22"
+confirmed_by_organizer=true

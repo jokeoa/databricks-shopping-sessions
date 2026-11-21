@@ -1,5 +1,8 @@
 [[case]]
 name = "public-small"
+sha256 = "8fb42d8df6becca786c908867874cc692078b275b86b5abc02ca065b8ea2a725"
+generator_sha256 = "e250fca8bba8e2529f42d78cfb31dde979719caa75de7df1a0cba126cdd949b7"
+threads = 2
 tier = "T2"
 seed = 1
 events = 10000
@@ -8,6 +11,9 @@ scale = 1
 
 [[case]]
 name = "leap-day"
+sha256 = "5a95b67d55ceea76532438f019b84c58eeec85db3f318d48ff321afeb4b52468"
+generator_sha256 = "e250fca8bba8e2529f42d78cfb31dde979719caa75de7df1a0cba126cdd949b7"
+threads = 2
 tier = "T2"
 seed = 15
 events = 30000
@@ -16,6 +22,9 @@ scale = 1
 
 [[case]]
 name = "new-year"
+sha256 = "85105cdd3bfe0f1f09cf87136c6db68418bbbdc0967ecdd4eabc5eac656ccd8e"
+generator_sha256 = "e250fca8bba8e2529f42d78cfb31dde979719caa75de7df1a0cba126cdd949b7"
+threads = 2
 tier = "T2"
 seed = 29
 events = 20000
@@ -24,6 +33,9 @@ scale = 1
 
 [[case]]
 name = "amplified-dirt"
+sha256 = "c612e061bfdaed5a4127913a5347487c2281e908c81557dd0626fb210dd065d8"
+generator_sha256 = "fedd992371fa1ac63ee9ce4c6f32d1161777240a86b1991e257d17c0db19ddd8"
+threads = 2
 tier = "T2"
 seed = 5
 events = 100000
@@ -32,6 +44,9 @@ scale = 8
 
 [[case]]
 name = "one-million-half-clicks"
+sha256 = "09f05828c39c79df71fc30dbc4d95bb11e45e9dd138c6aa6e388fce0c4bb682d"
+generator_sha256 = "e250fca8bba8e2529f42d78cfb31dde979719caa75de7df1a0cba126cdd949b7"
+threads = 2
 tier = "T3"
 seed = 15
 events = 1000000
@@ -40,6 +55,9 @@ scale = 1
 
 [[case]]
 name = "one-million-eighth-clicks"
+sha256 = "61c70b0ee7799b1eea4c49aae59db6794a38bfe1811f8486aaa755cc03b9d2ec"
+generator_sha256 = "e250fca8bba8e2529f42d78cfb31dde979719caa75de7df1a0cba126cdd949b7"
+threads = 2
 tier = "T3"
 seed = 29
 events = 1000000

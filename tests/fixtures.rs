@@ -76,3 +76,48 @@ fn both_drivers_match_all_hand_written_cases() {
     }
     fs::remove_dir_all(tmp).unwrap();
 }
+
+#[test]
+fn fast_results_survive_chunk_thread_and_bucket_boundaries() {
+    let tmp = std::env::temp_dir().join(format!("ss-matrix-{}", std::process::id()));
+    fs::create_dir(&tmp).unwrap();
+    for suite in ["fixtures", "fixtures-extra"] {
+        for entry in fs::read_dir(Path::new("testdata").join(suite)).unwrap() {
+            let case = entry.unwrap().path();
+            if !case.is_dir() {
+                continue;
+            }
+            let expected_users = expected(&case, "user_daily");
+            let expected_campaigns = expected(&case, "campaign_daily");
+            let data = case.join("input");
+            let out = tmp.join("result");
+            let mut cfg = Config::load(&[data.into(), out.clone().into()], "fast").unwrap();
+            cfg.mode = "fast".into();
+            let default_chunk = cfg.chunk;
+            for threads in [1, 3, 8] {
+                for chunk in [64, 4096, default_chunk] {
+                    for buckets in [1, 7, 512] {
+                        cfg.threads = threads;
+                        cfg.chunk = chunk;
+                        cfg.event_buckets = buckets;
+                        cfg.person_buckets = buckets;
+                        run(&cfg).unwrap();
+                        let settings = (&case, threads, chunk, buckets);
+                        assert_eq!(
+                            expected_users,
+                            actual(&out.join("user_daily")),
+                            "{settings:?}"
+                        );
+                        assert_eq!(
+                            expected_campaigns,
+                            actual(&out.join("campaign_daily")),
+                            "{settings:?}"
+                        );
+                        fs::remove_dir_all(&out).unwrap();
+                    }
+                }
+            }
+        }
+    }
+    fs::remove_dir(tmp).unwrap();
+}

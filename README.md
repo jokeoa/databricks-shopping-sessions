@@ -23,4 +23,4 @@ sh tools/ablation_docker.sh work/timing-docker
 make presubmit TAG=sub-002 SCOPE=bounded
 ```
 
-[Organizer's rules](spec/rules.md) · [Specification](SPEC.md)
+[Verification coverage](spec/verification.md) · [Organizer's rules](spec/rules.md) · [Specification](SPEC.md)

@@ -38,17 +38,29 @@ def main():
                     if proc.returncode:
                         raise RuntimeError(proc.stderr)
                     observed = rows(load_actual(out / table, schema))
+                    comparison = subprocess.run(
+                        [sys.executable, "scripts/compare.py", fx / "expected", out],
+                        text=True,
+                        capture_output=True,
+                    )
                     if not switch:
                         assert observed == expected, (m, "control")
+                        assert comparison.returncode == 0, (
+                            comparison.stdout + comparison.stderr
+                        )
                     else:
-                        if expected == observed:
+                        if (
+                            expected == observed
+                            or comparison.returncode != 1
+                            or "DIFFER" not in comparison.stdout
+                        ):
                             raise ValueError(f"survived {m} {mode}")
                         report.append(
                             {
                                 **m,
                                 "mode": mode,
                                 "process_status": proc.returncode,
-                                "comparison_status": 1,
+                                "comparison_status": comparison.returncode,
                                 "expected": expected[:8],
                                 "observed": observed[:8],
                             }
