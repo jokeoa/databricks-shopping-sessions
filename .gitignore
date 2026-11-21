@@ -1,1 +1,8 @@
 /.local/
+/work/
+/target/
+/fuzz/target/
+/fuzz/artifacts/
+__pycache__/
+.ruff_cache/
+.DS_Store

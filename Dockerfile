@@ -1,23 +1,12 @@
-# Shopping Sessions starter: DuckDB skeleton.
-# The scorers are linux/amd64 (Intel Xeon). They build this file natively, so
-# the platform is selected by the builder. Use docker build --platform linux/amd64 locally.
-FROM python:3.12-slim-bookworm
+FROM rust:1.99.1-slim-bookworm AS build
+WORKDIR /build
+COPY Cargo.toml Cargo.lock build.rs rust-toolchain.toml ./
+COPY .cargo/ .cargo/
+COPY src/ src/
+RUN cargo build --release --locked --target x86_64-unknown-linux-gnu
 
-# The scorer runs the container as uid 1000; give that uid a name and a home.
-RUN useradd --uid 1000 --no-create-home --home-dir /scratch app
-
-COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
-
-COPY pipeline/ /app/pipeline/
-COPY run.sh /app/run.sh
-RUN chmod +x /app/run.sh
-
-# At run time the root filesystem is read-only, the user is 1000:1000, there is
-# no network, /data is read-only, and /output and /scratch are the only writable
-# places. run.sh points every temp and cache directory at /scratch.
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-WORKDIR /app
-CMD ["/app/run.sh"]
+FROM debian:bookworm-slim
+RUN groupadd --gid 1000 app && useradd --uid 1000 --gid 1000 --no-create-home --home-dir /scratch app
+COPY --from=build /build/target/x86_64-unknown-linux-gnu/release/shopping-sessions /app/shopping-sessions
+USER 1000:1000
+CMD ["/app/shopping-sessions"]

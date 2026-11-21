@@ -1,2 +1,9 @@
-.git
-.local
+*
+!Cargo.toml
+!Cargo.lock
+!build.rs
+!rust-toolchain.toml
+!.cargo
+!.cargo/**
+!src
+!src/**
