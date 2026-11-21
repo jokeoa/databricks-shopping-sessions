@@ -1,0 +1,40 @@
+{
+  "sub-001": {
+    "image": "sha256:c6e01a9b0b02f435ce9b8bc82d42e934e79b2c75cb038cc01b6101678244b43c",
+    "build": "389392bfe93580ef",
+    "memory.max": 536870912,
+    "memory.peak": 270213120,
+    "memory.swap.max": 0,
+    "memory.swap.peak": 0,
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0,
+      "sock_throttled": 0
+    },
+    "rss_peak_bytes": 241266688,
+    "both_tables_match": true
+  },
+  "sub-002": {
+    "image": "sha256:3a3565975127b1007c448ec5825e6b0af2ce9e78a471e33af132c89d9bedb254",
+    "build": "ededc140c4f5f920",
+    "memory.max": 536870912,
+    "memory.peak": 263544832,
+    "memory.swap.max": 0,
+    "memory.swap.peak": 0,
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0,
+      "sock_throttled": 0
+    },
+    "rss_peak_bytes": 234426368,
+    "both_tables_match": true
+  }
+}

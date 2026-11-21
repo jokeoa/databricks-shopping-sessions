@@ -1,0 +1,241 @@
+{
+  "input_sha256": "cb10a0509824f7500edb7289f8a5c7534da6a72610c7997501b13d314fbeea00",
+  "machine": "macOS-27.2.1-arm64-arm-64bit",
+  "threads": 8,
+  "summary": {
+    "work/candidate-001": {
+      "median_s": 0.09156733299823827,
+      "min_s": 0.08791116700012935,
+      "max_s": 0.1899833750030666,
+      "peak_rss_bytes": 363642880
+    },
+    "work/candidate-002": {
+      "median_s": 0.06919700000071316,
+      "min_s": 0.06501887500053272,
+      "max_s": 0.08641041699956986,
+      "peak_rss_bytes": 396886016
+    }
+  },
+  "runs": {
+    "work/candidate-001": [
+      {
+        "seconds": 0.1899833750030666,
+        "elapsed_s": 0.174090167,
+        "rss_peak_bytes": 312360960,
+        "write_s": 0.021323958,
+        "stages": {
+          "parse_links_s": 0.112700542,
+          "partition_s": 0.020948249999999988,
+          "session_s": 0.010182083000000008
+        },
+        "build": "389392bfe93580ef"
+      },
+      {
+        "seconds": 0.09156733299823827,
+        "elapsed_s": 0.081225292,
+        "rss_peak_bytes": 348553216,
+        "write_s": 0.019158958,
+        "stages": {
+          "parse_links_s": 0.03043775,
+          "partition_s": 0.014990749999999997,
+          "session_s": 0.010390291000000003
+        },
+        "build": "389392bfe93580ef"
+      },
+      {
+        "seconds": 0.09986458300045342,
+        "elapsed_s": 0.091261541,
+        "rss_peak_bytes": 349323264,
+        "write_s": 0.021566167,
+        "stages": {
+          "parse_links_s": 0.033199,
+          "partition_s": 0.0183225,
+          "session_s": 0.011900042
+        },
+        "build": "389392bfe93580ef"
+      },
+      {
+        "seconds": 0.08881800000017392,
+        "elapsed_s": 0.080358875,
+        "rss_peak_bytes": 343883776,
+        "write_s": 0.019692958,
+        "stages": {
+          "parse_links_s": 0.028869458,
+          "partition_s": 0.015671708,
+          "session_s": 0.009672167000000002
+        },
+        "build": "389392bfe93580ef"
+      },
+      {
+        "seconds": 0.08923795900045661,
+        "elapsed_s": 0.080471084,
+        "rss_peak_bytes": 339427328,
+        "write_s": 0.023508417,
+        "stages": {
+          "parse_links_s": 0.027309125,
+          "partition_s": 0.014486041000000002,
+          "session_s": 0.008781374999999998
+        },
+        "build": "389392bfe93580ef"
+      },
+      {
+        "seconds": 0.09472645900314092,
+        "elapsed_s": 0.085483791,
+        "rss_peak_bytes": 349192192,
+        "write_s": 0.019743917,
+        "stages": {
+          "parse_links_s": 0.027623458,
+          "partition_s": 0.016747375,
+          "session_s": 0.015132167000000005
+        },
+        "build": "389392bfe93580ef"
+      },
+      {
+        "seconds": 0.09735854199971072,
+        "elapsed_s": 0.088295792,
+        "rss_peak_bytes": 345014272,
+        "write_s": 0.020389166,
+        "stages": {
+          "parse_links_s": 0.027367084,
+          "partition_s": 0.018348083,
+          "session_s": 0.016064333
+        },
+        "build": "389392bfe93580ef"
+      },
+      {
+        "seconds": 0.08915466599864885,
+        "elapsed_s": 0.078635292,
+        "rss_peak_bytes": 355254272,
+        "write_s": 0.019890541,
+        "stages": {
+          "parse_links_s": 0.026459708,
+          "partition_s": 0.013874625000000002,
+          "session_s": 0.012145125
+        },
+        "build": "389392bfe93580ef"
+      },
+      {
+        "seconds": 0.08791116700012935,
+        "elapsed_s": 0.079062958,
+        "rss_peak_bytes": 363642880,
+        "write_s": 0.02353125,
+        "stages": {
+          "parse_links_s": 0.025876958,
+          "partition_s": 0.014144542000000003,
+          "session_s": 0.008956291999999998
+        },
+        "build": "389392bfe93580ef"
+      }
+    ],
+    "work/candidate-002": [
+      {
+        "seconds": 0.08641041699956986,
+        "elapsed_s": 0.0690395,
+        "rss_peak_bytes": 352190464,
+        "write_s": 0.011050541,
+        "stages": {
+          "parse_links_s": 0.027323125,
+          "partition_s": 0.014599916000000001,
+          "session_s": 0.009408209000000004
+        },
+        "build": "ededc140c4f5f920"
+      },
+      {
+        "seconds": 0.07376891700187116,
+        "elapsed_s": 0.064877584,
+        "rss_peak_bytes": 343982080,
+        "write_s": 0.013715666,
+        "stages": {
+          "parse_links_s": 0.0261175,
+          "partition_s": 0.009761665999999999,
+          "session_s": 0.009093667000000003
+        },
+        "build": "ededc140c4f5f920"
+      },
+      {
+        "seconds": 0.0723900409975613,
+        "elapsed_s": 0.058362542,
+        "rss_peak_bytes": 341557248,
+        "write_s": 0.009687166,
+        "stages": {
+          "parse_links_s": 0.025502834,
+          "partition_s": 0.008889999999999999,
+          "session_s": 0.0080585
+        },
+        "build": "ededc140c4f5f920"
+      },
+      {
+        "seconds": 0.070972959001665,
+        "elapsed_s": 0.060646959,
+        "rss_peak_bytes": 396886016,
+        "write_s": 0.010755209,
+        "stages": {
+          "parse_links_s": 0.022314916,
+          "partition_s": 0.009117625,
+          "session_s": 0.012410667000000004
+        },
+        "build": "ededc140c4f5f920"
+      },
+      {
+        "seconds": 0.0669832090025011,
+        "elapsed_s": 0.058952958,
+        "rss_peak_bytes": 354107392,
+        "write_s": 0.013976708,
+        "stages": {
+          "parse_links_s": 0.022649375,
+          "partition_s": 0.008480958,
+          "session_s": 0.007659583000000001
+        },
+        "build": "ededc140c4f5f920"
+      },
+      {
+        "seconds": 0.06919700000071316,
+        "elapsed_s": 0.060719667,
+        "rss_peak_bytes": 346062848,
+        "write_s": 0.01423,
+        "stages": {
+          "parse_links_s": 0.023451667,
+          "partition_s": 0.008936416999999999,
+          "session_s": 0.007691791000000003
+        },
+        "build": "ededc140c4f5f920"
+      },
+      {
+        "seconds": 0.0655565419983759,
+        "elapsed_s": 0.056563708,
+        "rss_peak_bytes": 359366656,
+        "write_s": 0.010649875,
+        "stages": {
+          "parse_links_s": 0.022729917,
+          "partition_s": 0.008901541000000002,
+          "session_s": 0.007984625000000002
+        },
+        "build": "ededc140c4f5f920"
+      },
+      {
+        "seconds": 0.06501887500053272,
+        "elapsed_s": 0.055970792,
+        "rss_peak_bytes": 344489984,
+        "write_s": 0.010528667,
+        "stages": {
+          "parse_links_s": 0.022528458,
+          "partition_s": 0.008725084000000001,
+          "session_s": 0.008169540999999995
+        },
+        "build": "ededc140c4f5f920"
+      },
+      {
+        "seconds": 0.06718512500083307,
+        "elapsed_s": 0.058433416,
+        "rss_peak_bytes": 346587136,
+        "write_s": 0.009984625,
+        "stages": {
+          "parse_links_s": 0.025842958,
+          "partition_s": 0.008575332999999997,
+          "session_s": 0.007910792000000007
+        },
+        "build": "ededc140c4f5f920"
+      }
+    ]
+  }
+}

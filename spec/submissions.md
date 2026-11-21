@@ -1,7 +1,12 @@
-# Practice submissions
+# Отправки на практику
 
-| Tag | Commit | Receipt | Scorer | Result | Hidden practice |
-| --- | --- | --- | --- | --- | --- |
-| sub-001 | e0b9cbd293865dfa287e4d090b2b1b54af877a05 | BB-1EE8E69C | shopping-sessions-4 | Scored | 3.83 s |
+22 ноября 2026 года по времени Астаны. Обе версии отправлены по полному SHA, обе запускали `fast`. Идентификатор официального скорера — `shopping-sessions-4`.
 
-The organizer marked sub-001 as the team's best and automatically entered it for the final when its score appeared. The result view exposed the score and a 253 ms queue wait. This is the hidden practice result. Scoring took place during the November 22, 2026 session in Asia/Almaty.
+| Тег | Коммит | Квитанция | Статус | Скрытая практика |
+| --- | --- | --- | --- | ---: |
+| `sub-001` | `e0b9cbd293865dfa287e4d090b2b1b54af877a05` | `BB-1EE8E69C` | Scored | 3,83 с |
+| `sub-002` | `510ef32e5d1f71a5520faf01caf4d0b7a03146be` | `BB-26407EB2` | Scored · Entered in the final (your best score) | **2,62 с** |
+
+Организатор сначала выбрал для финала первую засчитанную версию. После второй попытки автоматически выбрал `sub-002`. Ожидание в очереди составило 253 мс и 0 мс соответственно. В таблице приведено конкурсное время выполнения. Разница между отправками — 1,21 с (31,6%). Отдельный финальный результат на 60 млн событий на момент записи ещё не опубликован. [Трек и статус отправок](https://www.joinbuilders.org/buildathon/tracks/shopping-sessions)
+
+При локальной проверке контейнеры сообщили идентификаторы сборок `389392bfe93580ef` и `ededc140c4f5f920`. Идентификаторы проверочных образов и результат сравнения открытого dev сохранены вместе с показаниями Linux cgroup. [Сведения о локальных образах и памяти](measurements/dev-cgroup.json) · [Что повлияло на время](timings.md)

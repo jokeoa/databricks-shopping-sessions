@@ -37,6 +37,49 @@ def digest(dir):
     return h.hexdigest()
 
 
+def source_build_id(files):
+    """Mirror build.rs, including paths and separators in the same byte order."""
+    result = 0xCBF29CE484222325
+    for name, contents in files:
+        for byte in name.encode() + b"\0" + contents + b"\0":
+            result = ((result ^ byte) * 0x100000001B3) & 0xFFFFFFFFFFFFFFFF
+    return f"{result:016x}"
+
+
+def tree_build_id(base):
+    paths = sorted(
+        [
+            base / "Cargo.lock",
+            base / "Cargo.toml",
+            *(p for p in (base / "src").rglob("*") if p.is_file()),
+        ]
+    )
+    return source_build_id(
+        (p.relative_to(base).as_posix(), p.read_bytes()) for p in paths
+    )
+
+
+def revision_build_id(revision):
+    paths = subprocess.check_output(
+        [
+            "git",
+            "ls-tree",
+            "-r",
+            "--name-only",
+            revision,
+            "--",
+            "Cargo.toml",
+            "Cargo.lock",
+            "src",
+        ],
+        text=True,
+    ).splitlines()
+    return source_build_id(
+        (p, subprocess.check_output(["git", "show", f"{revision}:{p}"]))
+        for p in sorted(paths)
+    )
+
+
 def checked_output(expected, out):
     subprocess.run(
         [sys.executable, "scripts/compare.py", expected, out],
@@ -94,7 +137,10 @@ def native(args):
 
 def main():
     cli = argparse.ArgumentParser()
-    modes = cli.add_subparsers(dest="mode", required=True)
+    modes = cli.add_subparsers(dest="operation", required=True)
+    from linux_bench import arguments, series
+
+    arguments(modes.add_parser("container"))
     paired_cli = modes.add_parser("paired")
     paired_cli.add_argument("--bin", type=Path, action="append", required=True)
     paired_cli.add_argument("--data", type=Path, required=True)
@@ -107,7 +153,11 @@ def main():
         p.add_argument("--receipt", type=Path)
     single.add_argument("command", nargs=argparse.REMAINDER)
     args = cli.parse_args()
-    result = paired(args) if args.mode == "paired" else native(args)
+    result = (
+        series(args)
+        if args.operation == "container"
+        else (paired(args) if args.operation == "paired" else native(args))
+    )
     if args.receipt:
         args.receipt.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result.get("summary", result), indent=2))

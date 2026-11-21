@@ -13,4 +13,14 @@ For a native run, use `cargo build --profile quick --locked`, then `target/quick
 
 Exit status is 0 on success, 2 for configuration, 3 for input, 4 for output, and 5–8 for failed accounting or key checks. Stderr reports the build ID, stage times, outcomes, totals and peak RSS in bytes.
 
-The organizer's archives belong in `.local/`. Generated datasets, the virtual environment and execution receipts belong in `work/`. Read [the rules](spec/rules.md), [the design](SPEC.md) and [the submission log](spec/submissions.md).
+The organizer's archives belong in `.local/`. Generated datasets, the virtual environment and local execution receipts belong in `work/`. The public results were **3.83 s** for `sub-001` and **2.62 s** for `sub-002`. The organizer selected `sub-002` for the final. [Submission log](spec/submissions.md) · [Timing results and raw measurements](spec/timings.md)
+
+To reproduce the small-data measurements, prepare the public input with `make dev` and place the official answer in `.local/dev-answer`. Both commands use seven builds from the two submitted Git tags, eight workers and a fresh output directory. The Docker workload has a hard 512 MiB limit.
+
+```sh
+work/venv/bin/python tools/ablation.py native --root work/timing-native --receipt work/timing-native/receipt.json
+sh tools/ablation_docker.sh work/timing-docker
+make presubmit TAG=sub-002 SCOPE=bounded
+```
+
+[Organizer's rules](spec/rules.md) · [Specification](SPEC.md)
